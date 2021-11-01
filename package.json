@@ -1,0 +1,27 @@
+{
+  "name": "js-shepherd",
+  "version": "1.0.0",
+  "description": "Guide your customers to better user experiences as shepherds guide sheeps to the farmyard.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node esbuild.examples.config.js",
+    "build": "node esbuild.shepherd.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarcosNASA/react-shepherd.git"
+  },
+  "author": "Marcos S.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MarcosNASA/react-shepherd/issues"
+  },
+  "homepage": "https://github.com/MarcosNASA/react-shepherd#readme",
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.13.12"
+  }
+}
