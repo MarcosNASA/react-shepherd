@@ -1,12 +1,12 @@
-import * as React from 'react';
+import * as React from 'react'
 
-import { Greet } from './Greet';
+import { Greet } from './Greet'
 
-import { ShepherdProvider, Farmyard } from '../../dist/index';
+import { ShepherdProvider, Farmyard } from '../../dist/index'
 
 export const App = () => (
   <ShepherdProvider>
     <Farmyard />
     <Greet />
   </ShepherdProvider>
-);
+)

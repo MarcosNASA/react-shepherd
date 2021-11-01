@@ -1,16 +1,25 @@
-import * as React from 'react';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import * as React from 'react'
 
-import { useComponentSelfRegistration } from './hooks/useComponentSelfRegistration';
-import { useNodeRefPosition } from './hooks/useNodeRefPosition';
-import { useScrollIntoView } from './hooks/useScrollIntoView';
-import { Portal } from './components/Portal';
+import { useComponentSelfRegistration } from './hooks/useComponentSelfRegistration'
+import { useNodeRefPosition } from './hooks/useNodeRefPosition'
+import { useScrollIntoView } from './hooks/useScrollIntoView'
+import { Portal } from './components/Portal'
 
-export const Farmyard = ({
-  children,
-  id = 'shepherd-farmyard',
-  zIndex = 1,
-}) => (
+const goNextSheep = (setShepherd) => () => {
+  setShepherd((previousShepherd) => ({
+    ...previousShepherd,
+    activeSheep: previousShepherd.activeSheep + 1,
+  }))
+}
+
+const goPreviousSheep = (setShepherd) => () => {
+  setShepherd((previousShepherd) => ({
+    ...previousShepherd,
+    activeSheep: previousShepherd.activeSheep - 1,
+  }))
+}
+
+export const Farmyard = ({ children, id = 'shepherd-farmyard', zIndex = 1 }) => (
   <div
     id={id}
     style={{
@@ -25,110 +34,99 @@ export const Farmyard = ({
   >
     {children}
   </div>
-);
+)
 
-const ShepherdContext = createContext();
-const FlockContext = createContext();
-const SheepContext = createContext();
+const ShepherdContext = React.createContext()
+const FlockContext = React.createContext()
+const SheepContext = React.createContext()
 
 export const useShepherdContext = () => {
-  const shepherdContext = useContext(ShepherdContext);
-  if (!shepherdContext)
-    throw new Error(
-      'useShepherdContext must be used within a ShepherdProvider',
-    );
-  return shepherdContext;
-};
+  const shepherdContext = React.useContext(ShepherdContext)
+  if (!shepherdContext) throw new Error('useShepherdContext must be used within a ShepherdProvider')
+  return shepherdContext
+}
 
 export const useFlockContext = () => {
-  const flockContext = useContext(FlockContext);
-  if (!flockContext)
-    throw new Error('useFlockContext must be used within a SheepsProvider');
-  return flockContext;
-};
+  const flockContext = React.useContext(FlockContext)
+  if (!flockContext) throw new Error('useFlockContext must be used within a FlockProvider')
+  return flockContext
+}
 
 export const useSheepContext = () => {
-  const sheepContext = useContext(SheepContext);
-  if (!sheepContext)
-    throw new Error('useSheepContext must be used within a SheepProvider');
-  return sheepContext;
-};
+  const sheepContext = React.useContext(SheepContext)
+  if (!sheepContext) throw new Error('useSheepContext must be used within a SheepProvider')
+  return sheepContext
+}
 
 const DEFAULT_SHEPHERD_OPTIONS = {
-  initialDelay: 0, // @TODO: Implement
   farmyardId: 'shepherd-farmyard',
   shouldAutoScrollIntoView: true,
-};
+}
 export const ShepherdProvider = ({ children, options = {} }) => {
-  const [shepherd, setShepherd] = useState({
+  const [shepherd, setShepherd] = React.useState({
     activeSheep: 0,
     options: { ...DEFAULT_SHEPHERD_OPTIONS, ...options },
-  });
-  const [sheeps, setSheeps] = useState([]);
+  })
+  const [sheeps, setSheeps] = React.useState([])
 
   return (
     <ShepherdContext.Provider value={[shepherd, setShepherd]}>
-      <FlockContext.Provider value={[sheeps, setSheeps]}>
-        {children}
-      </FlockContext.Provider>
+      <FlockContext.Provider value={[sheeps, setSheeps]}>{children}</FlockContext.Provider>
     </ShepherdContext.Provider>
-  );
-};
+  )
+}
 
 export const Flock = ({ children }) => {
   const [
     {
       options: { farmyardId },
     },
-  ] = useShepherdContext();
-  const [flockContainer, setFlockContainer] = useState();
+  ] = useShepherdContext()
+  const [flockContainer, setFlockContainer] = React.useState()
 
-  useEffect(() => {
-    if (flockContainer) return;
-    setFlockContainer(document.getElementById(farmyardId));
-  }, [farmyardId, flockContainer]);
+  React.useEffect(() => {
+    if (flockContainer) return
+    setFlockContainer(document.getElementById(farmyardId))
+  }, [farmyardId, flockContainer])
 
-  if (!flockContainer) return null;
-  return <Portal container={flockContainer}>{children}</Portal>;
-};
+  if (!flockContainer) return null
+  return <Portal container={flockContainer}>{children}</Portal>
+}
 
-const DEFAULT_SHEEP_OPTIONS = { delay: 0 };
+const DEFAULT_SHEEP_OPTIONS = { delay: 0 }
 export const Sheep = ({ children: child, number, options = {}, spotRef }) => {
-  const [{ activeSheep }] = useShepherdContext();
-  const component = useMemo(
+  const [{ activeSheep }] = useShepherdContext()
+  const component = React.useMemo(
     () => ({
       element: spotRef,
     }),
-    [spotRef],
-  );
+    [spotRef]
+  )
   const sheepNumber = useComponentSelfRegistration({
     useContext: useFlockContext,
     component,
     index: number,
-  });
-  const sheep = useMemo(
+  })
+  const sheep = React.useMemo(
     () => ({
       number: sheepNumber,
     }),
-    [sheepNumber],
-  );
-  const isActive = activeSheep === sheepNumber;
+    [sheepNumber]
+  )
+  const isActive = activeSheep === sheepNumber
 
-  if (!spotRef.current) return null;
-  if (!isActive) return null;
+  if (!spotRef.current) return null
+  if (!isActive) return null
   return (
     <SheepContext.Provider value={sheep}>
-      <RenderAtSpot
-        spotRef={spotRef}
-        options={{ ...DEFAULT_SHEEP_OPTIONS, ...options }}
-      >
+      <RenderAtSpot spotRef={spotRef} options={{ ...DEFAULT_SHEEP_OPTIONS, ...options }}>
         {child}
       </RenderAtSpot>
     </SheepContext.Provider>
-  );
-};
+  )
+}
 
-const VERTICAL_OFFSET = 12;
+const VERTICAL_OFFSET = 12
 const makeSheepChildPropsGetter =
   ({ position } = {}) =>
   ({ style, ...props } = {}) => ({
@@ -136,32 +134,30 @@ const makeSheepChildPropsGetter =
       position: 'relative',
       width: `calc(100% - ${position.x}px)`,
       left: position.x + window.pageXOffset,
-      top: Math.abs(
-        position.y + position.height + window.pageYOffset + VERTICAL_OFFSET,
-      ),
+      top: Math.abs(position.y + position.height + window.pageYOffset + VERTICAL_OFFSET),
       pointerEvents: 'all',
       ...style,
     },
     ...props,
-  });
+  })
 const RenderAtSpot = ({ children: child, options, spotRef }) => {
-  const [position] = useNodeRefPosition({ ref: spotRef });
-  const [shepherd, setShepherd] = useShepherdContext();
+  const [position] = useNodeRefPosition({ ref: spotRef })
+  const [shepherd, setShepherd] = useShepherdContext()
   const {
     options: { shouldAutoScrollIntoView },
-  } = shepherd;
-  const [flock] = useFlockContext();
-  const sheep = useSheepContext();
+  } = shepherd
+  const [flock] = useFlockContext()
+  const sheep = useSheepContext()
 
-  const { delay } = options;
+  const { delay } = options
 
   useScrollIntoView({
     delay,
     ref: spotRef,
     shouldScrollIntoView: shouldAutoScrollIntoView,
-  });
+  })
 
-  if (!spotRef.current) return null;
+  if (!spotRef.current) return null
   return (
     <>
       {typeof child === 'function'
@@ -170,27 +166,28 @@ const RenderAtSpot = ({ children: child, options, spotRef }) => {
               setShepherd((previousShepherd) => ({
                 ...previousShepherd,
                 activeSheep: Infinity,
-              }));
+              }))
             },
             flockLength: flock.length,
-            getSheepChildProps: makeSheepChildPropsGetter({ position }),
-            goNextSheep: () => {
-              setShepherd((previousShepherd) => ({
-                ...previousShepherd,
-                activeSheep: previousShepherd.activeSheep + 1,
-              }));
-            },
-            goPreviousSheep: () => {
-              setShepherd((previousShepherd) => ({
-                ...previousShepherd,
-                activeSheep: previousShepherd.activeSheep - 1,
-              }));
-            },
+            getSheepProps: makeSheepChildPropsGetter({ position }),
+            goNextSheep: goNextSheep(setShepherd),
+            goPreviousSheep: goPreviousSheep(setShepherd),
             position,
             sheep,
             ...shepherd,
           })
         : child}
     </>
-  );
-};
+  )
+}
+
+export const useShepherd = () => {
+  const [shepherd, setShepherd] = useShepherdContext()
+
+  return {
+    shepherd,
+    setShepherd,
+    goNextSheep: React.useMemo(() => goNextSheep(setShepherd), [setShepherd]),
+    goPreviousSheep: React.useMemo(() => goPreviousSheep(setShepherd), [setShepherd]),
+  }
+}
