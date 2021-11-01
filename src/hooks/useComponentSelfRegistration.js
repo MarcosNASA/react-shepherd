@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import * as React from 'react'
 
 export const useComponentSelfRegistration = ({ component, useContext, index: customIndex }) => {
   const [registeredComponents, setRegisteredComponents] = useContext()
@@ -7,7 +7,7 @@ export const useComponentSelfRegistration = ({ component, useContext, index: cus
     customIndex ??
     registeredComponents.findIndex((registeredComponent) => component.element === registeredComponent.element)
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     const { element } = component
     const currentElement = element.current
     if (!currentElement) return

@@ -1,4 +1,4 @@
-const { build, serve } = require('esbuild');
+const { build, serve } = require('esbuild')
 
 serve(
   {
@@ -11,8 +11,8 @@ serve(
     loader: { '.js': 'jsx' },
     bundle: true,
     platform: 'browser',
-  },
+  }
 ).catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+  console.error(error)
+  process.exit(1)
+})

@@ -1,4 +1,4 @@
-const { build } = require('esbuild');
+const { build } = require('esbuild')
 
 build({
   entryPoints: ['index.js'],
@@ -12,6 +12,6 @@ build({
   platform: 'browser',
   splitting: true,
 }).catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+  console.error(error)
+  process.exit(1)
+})

@@ -1,1 +1,1 @@
-export * from './Shepherd';
+export * from './Shepherd'
