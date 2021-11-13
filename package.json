@@ -1,6 +1,6 @@
 {
   "name": "js-shepherd",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Guide your customers to better user experiences as shepherds guide sheeps to the farmyard.",
   "main": "dist/index.js",
   "scripts": {
