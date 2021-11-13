@@ -5,19 +5,41 @@ import { useNodeRefPosition } from './hooks/useNodeRefPosition'
 import { useScrollIntoView } from './hooks/useScrollIntoView'
 import { Portal } from './components/Portal'
 
-const goNextSheep = (setShepherd) => () => {
-  setShepherd((previousShepherd) => ({
-    ...previousShepherd,
-    activeSheep: previousShepherd.activeSheep + 1,
-  }))
-}
+const goNextSheep =
+  ({ setShepherd, flock }) =>
+  () => {
+    setShepherd((previousShepherd) => ({
+      ...previousShepherd,
+      activeSheep: Math.min(flock.length, previousShepherd.activeSheep + 1),
+    }))
+  }
 
-const goPreviousSheep = (setShepherd) => () => {
-  setShepherd((previousShepherd) => ({
-    ...previousShepherd,
-    activeSheep: previousShepherd.activeSheep - 1,
-  }))
-}
+const goPreviousSheep =
+  ({ setShepherd }) =>
+  () => {
+    setShepherd((previousShepherd) => ({
+      ...previousShepherd,
+      activeSheep: Math.max(previousShepherd.activeSheep - 1, -1),
+    }))
+  }
+
+const openFarmyard =
+  ({ setShepherd }) =>
+  () => {
+    setShepherd((previousShepherd) => ({
+      ...previousShepherd,
+      activeSheep: 0,
+    }))
+  }
+
+const closeFarmyard =
+  ({ setShepherd }) =>
+  () => {
+    setShepherd((previousShepherd) => ({
+      ...previousShepherd,
+      activeSheep: Infinity,
+    }))
+  }
 
 export const Farmyard = ({ children, id = 'shepherd-farmyard', zIndex = 1 }) => (
   <div
@@ -63,15 +85,15 @@ const DEFAULT_SHEPHERD_OPTIONS = {
   shouldAutoScrollIntoView: true,
 }
 export const ShepherdProvider = ({ children, options = {} }) => {
+  const [flock, setFlock] = React.useState([])
   const [shepherd, setShepherd] = React.useState({
     activeSheep: 0,
     options: { ...DEFAULT_SHEPHERD_OPTIONS, ...options },
   })
-  const [sheeps, setSheeps] = React.useState([])
 
   return (
     <ShepherdContext.Provider value={[shepherd, setShepherd]}>
-      <FlockContext.Provider value={[sheeps, setSheeps]}>{children}</FlockContext.Provider>
+      <FlockContext.Provider value={[flock, setFlock]}>{children}</FlockContext.Provider>
     </ShepherdContext.Provider>
   )
 }
@@ -162,16 +184,13 @@ const RenderAtSpot = ({ children: child, options, spotRef }) => {
     <>
       {typeof child === 'function'
         ? child({
-            dismiss: () => {
-              setShepherd((previousShepherd) => ({
-                ...previousShepherd,
-                activeSheep: Infinity,
-              }))
-            },
+            closeFarmyard: closeFarmyard({ setShepherd }),
+            flock,
             flockLength: flock.length,
             getSheepProps: makeSheepChildPropsGetter({ position }),
-            goNextSheep: goNextSheep(setShepherd),
-            goPreviousSheep: goPreviousSheep(setShepherd),
+            goNextSheep: goNextSheep({ setShepherd, flock }),
+            goPreviousSheep: goPreviousSheep({ setShepherd }),
+            openFarmyard: openFarmyard({ setShepherd }),
             position,
             sheep,
             ...shepherd,
@@ -183,11 +202,16 @@ const RenderAtSpot = ({ children: child, options, spotRef }) => {
 
 export const useShepherd = () => {
   const [shepherd, setShepherd] = useShepherdContext()
+  const [flock, setFlock] = useFlockContext()
 
   return {
+    flock,
+    setFlock,
     shepherd,
     setShepherd,
-    goNextSheep: React.useMemo(() => goNextSheep(setShepherd), [setShepherd]),
-    goPreviousSheep: React.useMemo(() => goPreviousSheep(setShepherd), [setShepherd]),
+    goNextSheep: React.useMemo(() => goNextSheep({ setShepherd, flock }), [setShepherd, flock]),
+    goPreviousSheep: React.useMemo(() => goPreviousSheep({ setShepherd }), [setShepherd]),
+    openFarmyard: React.useMemo(() => openFarmyard({ setShepherd }), [setShepherd]),
+    closeFarmyard: React.useMemo(() => closeFarmyard({ setShepherd }), [setShepherd]),
   }
 }

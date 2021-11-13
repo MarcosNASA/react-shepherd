@@ -12,22 +12,13 @@ export const useComponentSelfRegistration = ({ component, useContext, index: cus
     const currentElement = element.current
     if (!currentElement) return
 
-    setRegisteredComponents((previousRegisteredComponents) =>
-      [
-        ...previousRegisteredComponents,
-        {
-          ...component,
-          index,
-        },
-      ]
-        .sort(({ element: { current: a } = {} } = {}, { element: { current: b } = {} } = {}) =>
-          a && b && a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_PRECEDING ? 1 : -1
-        )
-        .map((component, index) => ({
-          ...component,
-          index,
-        }))
-    )
+    setRegisteredComponents((previousRegisteredComponents) => [
+      ...previousRegisteredComponents,
+      {
+        ...component,
+        index,
+      },
+    ])
 
     return () => {
       setRegisteredComponents((previousRegisteredComponents) =>
