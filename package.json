@@ -9,7 +9,8 @@
     "format": "yarn prettier --check .",
     "format:fix": "yarn format --write .",
     "start": "node esbuild.examples.config.js",
-    "build": "node esbuild.shepherd.config.js"
+    "build": "node esbuild.shepherd.config.js",
+    "prepare": "yarn build"
   },
   "repository": {
     "type": "git",
