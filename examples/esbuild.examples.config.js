@@ -6,10 +6,10 @@ serve(
     port: 3000,
   },
   {
-    entryPoints: ['examples/index.js'],
+    entryPoints: ['index.js'],
     outdir: 'public',
-    loader: { '.js': 'jsx' },
     bundle: true,
+    loader: { '.js': 'jsx' },
     platform: 'browser',
   }
 ).catch((error) => {
