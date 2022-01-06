@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { useShepherd, Flock, Sheep } from '../../dist/index'
+import { useShepherd, Flock, Sheep } from 'js-shepherd'
 
 export const Greet = () => {
   const {

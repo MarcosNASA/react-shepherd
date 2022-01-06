@@ -1,15 +1,13 @@
 {
-  "name": "js-shepherd",
-  "version": "1.1.1",
-  "description": "Guide your customers to better user experiences as shepherds guide sheeps to the farmyard.",
-  "main": "dist/index.js",
+  "name": "examples",
+  "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
     "lint": "eslint",
     "lint:fix": "yarn lint --fix",
     "format": "yarn prettier --check .",
     "format:fix": "yarn format --write .",
-    "build": "node esbuild.shepherd.config.js",
-    "prepare": "yarn build"
+    "start": "node esbuild.examples.config.js"
   },
   "repository": {
     "type": "git",
@@ -21,10 +19,10 @@
     "url": "https://github.com/MarcosNASA/react-shepherd/issues"
   },
   "homepage": "https://github.com/MarcosNASA/react-shepherd#readme",
-  "dependencies": {},
-  "peerDependencies": {
-    "react": ">=16.12.0",
-    "react-dom": ">=16.12.0"
+  "dependencies": {
+    "js-shepherd": "^1.1.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "esbuild": "^0.13.12",
